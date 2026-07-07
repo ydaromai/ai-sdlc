@@ -215,6 +215,7 @@ pipeline:
     dev_plans_dir: "docs/dev_plans"
     agent_constraints: "docs/ai_definitions/AGENT_CONSTRAINTS.md"
     breakdown_definition: "docs/ai_definitions/TASK_BREAKDOWN_DEFINITION.md"
+    pipeline_definition: "docs/ai_definitions/PIPELINE.md"   # canonical devflow stage map (read by /devflow, /clear_and_go, /trace-upstream)
     jira_import: "scripts/jira/jira-import.js"
     jira_transition: "scripts/jira/transition-issue.js"
     validate_breakdown: "scripts/ai_development/validate-breakdown.js"

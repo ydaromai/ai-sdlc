@@ -1,5 +1,7 @@
 # ai-sdlc
 
+[![CI](https://github.com/ydaromai/ai-sdlc/actions/workflows/ci.yml/badge.svg)](https://github.com/ydaromai/ai-sdlc/actions/workflows/ci.yml)
+
 **An AI-driven software delivery lifecycle for [Claude Code](https://claude.com/claude-code).**
 
 `ai-sdlc` is a Claude Code plugin that turns a rough idea into shipped, reviewed code through a small, opinionated pipeline. Each stage is a slash command; each command is backed by **23 expert builder agents**, **19 critic agents**, and deterministic shell scripts that enforce quality gates the model can't skip.
@@ -9,6 +11,8 @@
   raw        PRD          dev plan        issue tracker (optional)         build + review
   inputs   (validated)   (validated)                                       to 0 warnings
 ```
+
+Run it stage by stage, or hand the whole line to **`/devflow`** to orchestrate it end to end (with `/clear_and_go` checkpoints and `/trace-upstream` for root-cause analysis).
 
 Three commands work across every stage:
 
@@ -148,6 +152,14 @@ Each artifact-producing stage (2, 3) runs a **critic panel** and won't pass unti
 - **`/devils-advocate [--diff <range>] [--context "…"]`** — Adversarial review on any diff range, applying heightened scrutiny for the failure classes ordinary critics miss.
 - **`/ask <question>`** — Answer any question about the codebase, architecture, dependencies, or the web, using read-only tools only. Never creates or modifies files.
 
+### Orchestration & workflow commands
+
+- **`/devflow <requirement>`** — Run the whole pipeline as one orchestrated line: `/discuss → /req2prd → /prd2plan → /execute-plan`, fresh-context, with a human gate and a context-clear between stages, plus resume detection. The hands-off way to run ai-sdlc end to end. (Reads `docs/ai_definitions/PIPELINE.md` as its stage map.)
+- **`/clear_and_go`** — Save a pipeline checkpoint to `docs/pipeline-state/<slug>.json` and hand back the exact command to resume with after `/clear`. Lets you run the pipeline manually stage-by-stage across context clears without losing your place.
+- **`/trace-upstream`** — Read-only upstream root-cause analysis: given a defect in a pipeline result, trace back through the deliverable chain (code → dev plan → PRD → requirement) to the **birthplace** stage, classify it, and route a two-altitude fix. Distinct from `/validate` (forward review) — this works backward from a symptom.
+
+> **`docs/ai_definitions/PIPELINE.md`** is the canonical stage map that `/devflow`, `/clear_and_go`, and `/trace-upstream` all read. `/pipeline-init` scaffolds it from `pipeline/templates/pipeline-definition-template.md`.
+
 ---
 
 ## The agents
@@ -233,14 +245,15 @@ Both stage-4 commands run the same mandatory Dev + Product critic gate on the pl
 
 **Deterministic orchestration.** The shell scripts in `pipeline/scripts/` own the parts that must be reliable:
 
-- `execute-plan.sh` — parses the plan, builds the dependency graph, runs stories sequentially per group with a Ralph Loop + DA gate, triages findings, and does a final DA. Self-resolves its own root from its location.
+- `execute-plan.sh` — parses the plan, builds the dependency graph, runs each story through the `/ralph-loop-to-0w0c-score-gt-9` command + a `/devils-advocate` gate, triages findings, and does a final DA. Self-resolves its own root from its location.
 - `execute-plan-unattended.sh` — a heartbeat/auto-resume wrapper that rides out stalls, hangs, and API-outage bursts and resumes from the last committed task.
 - `execute-plan-monitor.sh` — a read-only progress dashboard for a running execution.
 - `select-agents.sh` + `glob-match.sh` + `agent-config.json` — deterministic domain inference and builder/critic selection.
 - `parse-scores.sh` — parses critic output into a structured PASS/FAIL verdict with calibration telemetry.
+- `post-build.sh` (+ `check-uncalled.sh`) and `check-output.sh` — build-quality checks the ralph loop runs (lint/typecheck/dead-code, required output sections).
 - `parse-plan.py` — plan parsing / dependency extraction.
 
-**The Ralph Loop.** Within `/execute-plan`, each story runs a build → review cycle to a target of **0 warnings / 0 criticals / score ≥ 9**, with a fresh-context review each iteration, capped by `max_iterations`.
+**The Ralph Loop.** `/execute-plan` invokes the **`/ralph-loop-to-0w0c-score-gt-9`** command per story — a build → review cycle to a target of **0 warnings / 0 criticals / score ≥ 9**, with a fresh-context review each iteration (driven by the `ralph-*-prompt.md` templates + `ci-guidelines.md`), capped by `max_iterations`. This command is a supporting dependency of `/execute-plan`, not a primary pipeline stage.
 
 ---
 
@@ -251,7 +264,7 @@ ai-sdlc/
 ├── .claude-plugin/
 │   ├── plugin.json              # plugin manifest
 │   └── marketplace.json         # marketplace index
-├── commands/                    # the 11 slash commands
+├── commands/                    # 14 pipeline/workflow commands + ralph-loop-to-0w0c-score-gt-9 (supporting)
 ├── hooks/
 │   └── hooks.json               # SessionStart → write-root.sh
 ├── pipeline/

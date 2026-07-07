@@ -281,6 +281,16 @@ AGENT_CONSTRAINTS.md not found. Options:
 
 If creating, read the template from `{{AISDLC_ROOT}}/pipeline/templates/agent-constraints-template.md` and write it to `docs/ai_definitions/AGENT_CONSTRAINTS.md`.
 
+If `docs/ai_definitions/PIPELINE.md` doesn't exist, ask the user:
+
+```
+PIPELINE.md (canonical pipeline stage map) not found. Options:
+1. Create from default template (Recommended) — the devflow stage map read by /devflow, /clear_and_go, and /trace-upstream
+2. Skip — I'll add it later
+```
+
+If creating, read the template from `{{AISDLC_ROOT}}/pipeline/templates/pipeline-definition-template.md` and write it to `docs/ai_definitions/PIPELINE.md`. This is the single source of truth for the pipeline's stages, deliverable paths, review model, and resume commands — `/devflow`, `/clear_and_go`, and `/trace-upstream` all read it.
+
 ## Step 8: Update CLAUDE.md
 
 If `CLAUDE.md` exists, **append** the pipeline integration section (don't overwrite existing content):
