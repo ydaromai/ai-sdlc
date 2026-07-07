@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install bats
+        run: sudo apt-get update && sudo apt-get install -y bats
+
+      - name: Verify toolchain (jq, python3, bats)
+        run: |
+          jq --version
+          python3 --version
+          bats --version
+
+      - name: Structure tests (builder + critic personas)
+        run: npm run test:structure
+
+      - name: JIRA package tests
+        run: npm run test:jira
+
+      - name: Shell script tests (bats)
+        run: npm run test:scripts
