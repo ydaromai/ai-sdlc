@@ -1,0 +1,17 @@
+{
+  "name": "ai-sdlc",
+  "owner": {
+    "name": "Yohai Darom"
+  },
+  "metadata": {
+    "description": "AI-SDLC — a clean, expert-driven software delivery pipeline for Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "ai-sdlc",
+      "source": "./",
+      "description": "AI-driven software delivery lifecycle: discuss → req2prd → prd2plan → (plan2jira | plan2linear) → execute-plan, with 23 builder agents, 19 critics, and a Devil's Advocate gate.",
+      "version": "1.0.0"
+    }
+  ]
+}

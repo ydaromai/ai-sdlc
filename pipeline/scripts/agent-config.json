@@ -1,0 +1,856 @@
+{
+  "version": 1,
+  "domains": {
+    "Security": {
+      "priority": 1,
+      "file_patterns": [
+        "**/auth.ts",
+        "**/auth.tsx",
+        "**/auth.js",
+        "**/auth.jsx",
+        "**/auth/*",
+        "**/rbac/*",
+        "**/permissions/*",
+        "**/middleware/auth*",
+        "**/login/*",
+        "**/signup/*",
+        "**/security/*",
+        "**/crypto/*"
+      ],
+      "task_signals": [
+        "auth",
+        "RBAC",
+        "permissions",
+        "encryption",
+        "vulnerability",
+        "CSP",
+        "CORS"
+      ],
+      "builder": "security-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "data-integrity-critic.md"
+      ],
+      "total_critics": 5
+    },
+    "ML": {
+      "priority": 2,
+      "file_patterns": [
+        "**/ai/*",
+        "**/ml/*",
+        "**/llm/*",
+        "**/services/ai*",
+        "**/services/ml*",
+        "**/prompts/*",
+        "**/embeddings/*",
+        "**/inference/*",
+        "**/ml/models/*",
+        "**/ai/models/*",
+        "**/rag/*",
+        "**/ai/agents/*",
+        "**/ml/agents/*",
+        "**/vectors/*"
+      ],
+      "task_signals": [
+        "AI",
+        "LLM",
+        "embeddings",
+        "RAG",
+        "model",
+        "inference",
+        "prompts"
+      ],
+      "builder": "ml-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "ml-critic.md",
+        "performance-critic.md"
+      ],
+      "total_critics": 6
+    },
+    "Data Analytics": {
+      "priority": 3,
+      "file_patterns": [
+        "**/dashboards/*",
+        "**/dashboard/widgets/*",
+        "**/dashboard/charts/*",
+        "**/analytics/*",
+        "**/charts/*",
+        "**/reports/*",
+        "**/kpi/*",
+        "**/visualization/*"
+      ],
+      "task_signals": [
+        "dashboard",
+        "chart",
+        "report",
+        "KPI",
+        "visualization"
+      ],
+      "builder": "data-analytics-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "data-analytics-critic.md",
+        "data-critic.md",
+        "performance-critic.md",
+        "designer-critic.md"
+      ],
+      "total_critics": 8
+    },
+    "AI Data Analytics": {
+      "priority": 4,
+      "file_patterns": [
+        "**/ai-analytics/*",
+        "**/ai-insights/*",
+        "**/intelligent-analytics/*",
+        "**/ai-predictions/*",
+        "**/forecasting/*",
+        "**/anomaly/*",
+        "**/anomaly-detection/*",
+        "**/nl2sql/*",
+        "**/nl-query/*",
+        "**/query-builder/ai*",
+        "**/auto-insights/*",
+        "**/smart-reports/*",
+        "**/ai-reports/*",
+        "**/data-exploration/*",
+        "**/data-assistant/*"
+      ],
+      "task_signals": [
+        "NL2SQL",
+        "forecasting",
+        "anomaly detection",
+        "AI insights",
+        "smart reports"
+      ],
+      "builder": "ai-data-analytics-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "ai-data-analytics-critic.md",
+        "data-analytics-critic.md",
+        "ml-critic.md",
+        "performance-critic.md"
+      ],
+      "total_critics": 8
+    },
+    "Infra": {
+      "priority": 6,
+      "file_patterns": [
+        "**/terraform/*",
+        "*.tf",
+        "**/cdk/*",
+        "**/pulumi/*",
+        "**/k8s/*",
+        "**/kubernetes/*",
+        "**/helm/*",
+        "**/cloudformation/*"
+      ],
+      "task_signals": [
+        "Terraform",
+        "Kubernetes",
+        "Helm",
+        "CloudFormation",
+        "CDK",
+        "IaC"
+      ],
+      "builder": "infra-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md"
+      ],
+      "domain_critics": [
+        "infra-critic.md",
+        "devops-critic.md"
+      ],
+      "total_critics": 5
+    },
+    "Data": {
+      "priority": 7,
+      "file_patterns": [
+        "migrations/*",
+        "supabase/migrations/*",
+        "prisma/*",
+        "drizzle/*",
+        "*.sql",
+        "**/seed*",
+        "**/repo/*",
+        "**/repositories/*",
+        "**/etl/*",
+        "**/transforms/*",
+        "**/import/*",
+        "**/export/*",
+        "dataform/**",
+        "**/dataform/**",
+        "*.sqlx",
+        "**/*.sqlx",
+        "model/cubes/*",
+        "**/model/cubes/*",
+        "model/views/*",
+        "**/model/views/*",
+        "**/*reconciliation*",
+        "**/*money*",
+        "test/integration/*reconciliation*",
+        "test/integration/*money*"
+      ],
+      "task_signals": [
+        "migration",
+        "schema",
+        "database",
+        "seed",
+        "ETL",
+        "repository",
+        "reconciliation",
+        "money"
+      ],
+      "builder": "data-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "data-critic.md",
+        "data-integrity-critic.md",
+        "performance-critic.md"
+      ],
+      "total_critics": 7
+    },
+    "Frontend": {
+      "priority": 8,
+      "file_patterns": [
+        "src/components/**/*",
+        "src/app/**/*",
+        "src/pages/**/*",
+        "pages/**/*",
+        "components/**/*",
+        "src/hooks/**/*",
+        "src/context/**/*",
+        "*.css",
+        "*.scss",
+        "*.module.css",
+        "client/src/**/*",
+        "client/components/**/*",
+        "client/app/**/*",
+        "src/screens/**/*",
+        "src/sheets/**/*",
+        "src/styles/**/*",
+        "src/state/**/*",
+        "src/data/queries/**/*",
+        "src/data/mutations/**/*",
+        "src/main.tsx",
+        "src/App.tsx",
+        "src/design-tokens.ts",
+        "index.html",
+        "src/**/*.module.css"
+      ],
+      "task_signals": [
+        "component",
+        "UI",
+        "page",
+        "layout",
+        "responsive",
+        "styling",
+        "i18n",
+        "ErrorBoundary",
+        "translation",
+        "React"
+      ],
+      "builder": "frontend-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "frontend-critic.md",
+        "designer-critic.md",
+        "performance-critic.md"
+      ],
+      "total_critics": 7
+    },
+    "Backend": {
+      "priority": 9,
+      "file_patterns": [
+        "src/api/**/*",
+        "src/lib/**/*",
+        "lib/**/*",
+        "src/services/**/*",
+        "src/middleware/**/*",
+        "app/api/**/*"
+      ],
+      "task_signals": [
+        "API",
+        "endpoint",
+        "middleware",
+        "service",
+        "route handler"
+      ],
+      "builder": "backend-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "performance-critic.md",
+        "api-contract-critic.md",
+        "observability-critic.md"
+      ],
+      "total_critics": 7
+    },
+    "Testing": {
+      "priority": 10,
+      "file_patterns": [
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/*.spec.tsx",
+        "**/tests/**/*",
+        "**/test/**/*",
+        "**/__tests__/**/*",
+        "**/e2e/**/*",
+        "**/playwright/**/*",
+        "jest.config.*",
+        "vitest.config.*",
+        "playwright.config.*"
+      ],
+      "task_signals": [
+        "fix tests",
+        "write tests",
+        "test coverage",
+        "flaky",
+        "warnings in tests",
+        "test failures"
+      ],
+      "builder": "testing-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md"
+      ],
+      "domain_critics": [],
+      "total_critics": 3
+    },
+    "DevOps": {
+      "priority": 11,
+      "file_patterns": [
+        ".github/workflows/*",
+        ".gitlab-ci.yml",
+        "Dockerfile*",
+        "docker-compose*",
+        "vercel.json",
+        "netlify.toml",
+        "Makefile",
+        "Procfile",
+        "**/deploy/**/*",
+        "**/scripts/deploy*",
+        "**/scripts/ci*",
+        "scripts/ci/**",
+        "**/scripts/ci/**",
+        "DEPLOY.md",
+        "**/DEPLOY.md",
+        "**/docs/deploy/**/*",
+        "**/docs/runbooks/**/*",
+        "**/launch-gates.json",
+        "**/config/launch-gates.json"
+      ],
+      "task_signals": [
+        "CI",
+        "CD",
+        "pipeline",
+        "deploy",
+        "Docker",
+        "workflow",
+        "environment"
+      ],
+      "builder": "devops-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md"
+      ],
+      "domain_critics": [
+        "devops-critic.md",
+        "infra-critic.md",
+        "observability-critic.md"
+      ],
+      "total_critics": 6
+    },
+    "Designer": {
+      "priority": 12,
+      "file_patterns": [
+        "**/design-system/**/*",
+        "**/tokens/**/*",
+        "**/theme/**/*",
+        "**/styles/**/*",
+        "**/ui/**/*",
+        "**/primitives/**/*"
+      ],
+      "task_signals": [
+        "design system",
+        "tokens",
+        "accessibility",
+        "a11y",
+        "CSS architecture",
+        "animations",
+        "visual"
+      ],
+      "builder": "designer-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "designer-critic.md",
+        "frontend-critic.md"
+      ],
+      "total_critics": 6
+    },
+    "Performance": {
+      "priority": 13,
+      "file_patterns": [
+        "**/cache/**/*",
+        "**/perf/**/*",
+        "**/optimization/**/*",
+        "**/workers/**/*",
+        "**/cdn/**/*"
+      ],
+      "task_signals": [
+        "optimize",
+        "slow",
+        "cache",
+        "N+1",
+        "bundle size",
+        "memory leak",
+        "latency"
+      ],
+      "builder": "performance-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "performance-critic.md",
+        "observability-critic.md"
+      ],
+      "total_critics": 6
+    },
+    "Product": {
+      "priority": 15,
+      "file_patterns": [
+        "docs/prd/**/*",
+        "docs/requirements/**/*",
+        "docs/specs/**/*",
+        "docs/user-stories/**/*"
+      ],
+      "task_signals": [
+        "PRD",
+        "requirements",
+        "user stories",
+        "acceptance criteria",
+        "feature spec"
+      ],
+      "builder": "product-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "designer-critic.md"
+      ],
+      "total_critics": 5
+    },
+    "API": {
+      "priority": 16,
+      "file_patterns": [
+        "**/openapi/**/*",
+        "**/swagger/**/*",
+        "**/graphql/**/*",
+        "**/schema/**/*.graphql",
+        "**/api-docs/**/*",
+        "**/api/v*/**/*",
+        "**/gateway/**/*"
+      ],
+      "task_signals": [
+        "API design",
+        "OpenAPI",
+        "Swagger",
+        "GraphQL",
+        "contract",
+        "versioning",
+        "API docs"
+      ],
+      "builder": "api-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "api-contract-critic.md",
+        "performance-critic.md"
+      ],
+      "total_critics": 6
+    },
+    "Observability": {
+      "priority": 17,
+      "file_patterns": [
+        "**/observability/**/*",
+        "**/telemetry/**/*",
+        "**/logging/**/*",
+        "**/tracing/**/*",
+        "**/metrics/**/*",
+        "**/monitoring/**/*",
+        "**/health/**/*",
+        "**/instrumentation/**/*"
+      ],
+      "task_signals": [
+        "logging",
+        "tracing",
+        "metrics",
+        "alerting",
+        "health check",
+        "monitoring",
+        "monitoring instrumentation"
+      ],
+      "builder": "observability-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md"
+      ],
+      "domain_critics": [
+        "observability-critic.md",
+        "devops-critic.md",
+        "performance-critic.md"
+      ],
+      "total_critics": 6
+    },
+    "Data Integrity": {
+      "priority": 18,
+      "file_patterns": [
+        "**/policies/**/*",
+        "**/rls/**/*",
+        "**/audit/**/*",
+        "**/triggers/**/*",
+        "**/functions/**/*.sql",
+        "**/constraints/**/*",
+        "lib/chat/capture/**"
+      ],
+      "task_signals": [
+        "RLS",
+        "referential integrity",
+        "cascade",
+        "audit trail",
+        "soft delete",
+        "data isolation"
+      ],
+      "builder": "data-integrity-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "data-integrity-critic.md",
+        "data-critic.md",
+        "supabase-critic.md",
+        "performance-critic.md"
+      ],
+      "total_critics": 8
+    },
+    "Integration": {
+      "priority": 19,
+      "file_patterns": [
+        "**/integrations/**/*",
+        "**/webhooks/**/*",
+        "**/providers/**/*",
+        "**/connectors/**/*",
+        "**/external/**/*",
+        "**/oauth/**/*",
+        "**/payments/**/*",
+        "**/notifications/**/*"
+      ],
+      "task_signals": [
+        "Stripe",
+        "Twilio",
+        "webhook",
+        "OAuth",
+        "third-party",
+        "payment",
+        "notification",
+        "external API"
+      ],
+      "builder": "integration-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "integration-critic.md",
+        "api-contract-critic.md",
+        "performance-critic.md"
+      ],
+      "total_critics": 7
+    },
+    "Supabase": {
+      "priority": 5,
+      "file_patterns": [
+        "supabase/**/*",
+        "**/supabase/**/*",
+        "supabase/migrations/**/*",
+        "supabase/functions/**/*",
+        "supabase/config.toml"
+      ],
+      "task_signals": [
+        "Supabase",
+        "RLS policy",
+        "Edge Function",
+        "Realtime",
+        "storage bucket",
+        "supabase migration"
+      ],
+      "builder": "supabase-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "supabase-critic.md",
+        "data-integrity-critic.md",
+        "data-critic.md",
+        "performance-critic.md"
+      ],
+      "total_critics": 8
+    },
+    "Prompt Engineering": {
+      "priority": 20,
+      "file_patterns": [
+        "pipeline/agents/**/*",
+        "commands/**/*",
+        "docs/ai_definitions/**/*"
+      ],
+      "task_signals": [
+        "agent persona",
+        "command definition",
+        "constraint doc",
+        "instruction design",
+        "prompt engineering",
+        "pipeline prompt"
+      ],
+      "builder": "prompt-engineering-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "prompt-engineering-critic.md"
+      ],
+      "total_critics": 5
+    },
+    "Test Plan": {
+      "priority": 21,
+      "file_patterns": [
+        "docs/tdd/**/test-plan.md",
+        "docs/tdd/**/test-plan*.md"
+      ],
+      "task_signals": [
+        "test plan",
+        "test specification",
+        "TP coverage",
+        "test design",
+        "test strategy document"
+      ],
+      "builder": "test-plan-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "performance-critic.md",
+        "designer-critic.md"
+      ],
+      "total_critics": 6
+    },
+    "PRD": {
+      "priority": 14,
+      "file_patterns": [
+        "docs/prd/*.md"
+      ],
+      "task_signals": [
+        "write PRD",
+        "generate PRD",
+        "req2prd",
+        "PRD generation",
+        "convert requirement to PRD"
+      ],
+      "builder": "prd-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "performance-critic.md",
+        "data-integrity-critic.md"
+      ],
+      "total_critics": 6
+    },
+    "Dev Plan": {
+      "priority": 22,
+      "file_patterns": [
+        "docs/dev_plans/**/*",
+        "docs/plans/**/*"
+      ],
+      "task_signals": [
+        "dev plan",
+        "implementation plan",
+        "task breakdown",
+        "prd2plan",
+        "plan review"
+      ],
+      "builder": "dev-plan-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md",
+        "product-critic.md"
+      ],
+      "domain_critics": [
+        "devops-critic.md",
+        "performance-critic.md"
+      ],
+      "total_critics": 6
+    },
+    "Debugging": {
+      "priority": 23,
+      "file_patterns": [],
+      "task_signals": [
+        "bug",
+        "crash",
+        "exception",
+        "stack trace",
+        "root cause",
+        "flaky",
+        "regression",
+        "debug",
+        "not working",
+        "unexpected behavior"
+      ],
+      "builder": "debugging-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "qa-critic.md"
+      ],
+      "domain_critics": [],
+      "total_critics": 2,
+      "note": "Process domain, not a file domain. Empty file_patterns by design so it never wins file-based code_review routing — it routes only on task_signals via use_expert / the /debug command. Bug-fix review rigor lives in dev-critic.md and qa-critic.md (Bug-Fix Rigor section), so no paired debugging-critic exists."
+    }
+  },
+  "artifact_review": {
+    "always_on": [
+      "product-critic.md",
+      "dev-critic.md",
+      "devops-critic.md",
+      "qa-critic.md",
+      "security-critic.md",
+      "performance-critic.md",
+      "data-integrity-critic.md"
+    ],
+    "conditional": {
+      "has_backend_service": [
+        "observability-critic.md"
+      ],
+      "has_api": [
+        "api-contract-critic.md"
+      ],
+      "has_frontend": [
+        "designer-critic.md",
+        "frontend-critic.md"
+      ],
+      "has_ml": [
+        "ml-critic.md"
+      ],
+      "is_ai_instruction": [
+        "prompt-engineering-critic.md"
+      ]
+    }
+  },
+  "tdd_review": {
+    "description": "Testing domain core critics + target domain critics",
+    "base_critics": [
+      "dev-critic.md",
+      "security-critic.md",
+      "qa-critic.md"
+    ],
+    "note": "Union with target domain critics based on code-under-test file patterns"
+  },
+  "modes": {
+    "code_review": "file_patterns -> domain -> builder + critics",
+    "artifact_review": "PRD/plan review with conditional critics",
+    "tdd_review": "Testing core + target domain critics",
+    "use_expert": "task_signals + file_patterns -> domain -> builder"
+  },
+  "defaults": {
+    "fallback_domain": "Backend",
+    "tie_break": "priority_order",
+    "persona_base_path": "pipeline/agents/builders/",
+    "critic_base_path": "pipeline/agents/"
+  },
+  "routing_overrides": [
+    {
+      "name": "security-pin-auth-files",
+      "description": "Pin the Security domain whenever any file in the auth/security surface is touched, regardless of file-count majority. Story 4 DA W1 surfaced that small auth changes (1 file in a 10-file diff) were being routed to whichever domain had majority — exactly the cases Security must own.",
+      "patterns": [
+        "src/lib/auth.ts",
+        "src/lib/pin.ts",
+        "src/lib/attestation.ts",
+        "src/lib/biometric.ts",
+        "src/lib/deepLink.ts",
+        "src/lib/secure-storage.ts"
+      ],
+      "domain": "Security"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Node
+node_modules/
+
+# JIRA credentials and generated files
+.env.jira
+.env
+jira-issue-mapping.json
+.jira-import-history.json
+
+# Resolved plugin-root marker (written per-machine by the SessionStart hook)
+.ai-sdlc/

@@ -1,0 +1,9 @@
+{
+  "name": "ai-sdlc-jira-scripts",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "JIRA integration scripts for the ai-sdlc pipeline",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}

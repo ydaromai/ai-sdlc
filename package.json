@@ -1,0 +1,15 @@
+{
+  "name": "ai-sdlc",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "AI-driven software delivery lifecycle for Claude Code — expert-driven pipeline plugin",
+  "scripts": {
+    "test": "npm run test:structure && npm run test:scripts && npm run test:jira",
+    "test:structure": "node --test test/*-structure.test.js",
+    "test:scripts": "bats test/*.bats",
+    "test:jira": "cd scripts/jira && npm test"
+  },
+  "license": "MIT",
+  "author": "Yohai Darom",
+  "repository": "https://github.com/ydaromai/ai-sdlc"
+}
