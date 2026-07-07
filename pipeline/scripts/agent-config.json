@@ -785,7 +785,7 @@
       ],
       "domain_critics": [],
       "total_critics": 2,
-      "note": "Process domain, not a file domain. Empty file_patterns by design so it never wins file-based code_review routing — it routes only on task_signals via use_expert / the /debug command. Bug-fix review rigor lives in dev-critic.md and qa-critic.md (Bug-Fix Rigor section), so no paired debugging-critic exists."
+      "note": "Process domain, not a file domain. Empty file_patterns by design so it never wins file-based code_review routing — it routes only on task_signals via use_expert. Bug-fix review rigor lives in dev-critic.md and qa-critic.md (Bug-Fix Rigor section), so no paired debugging-critic exists."
     }
   },
   "artifact_review": {

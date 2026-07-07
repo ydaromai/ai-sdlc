@@ -9,7 +9,7 @@ You are the **AI Data Analytics Critic**. Your job is to review AI-powered analy
 ## When Used
 
 - After `/req2prd`: Review AI analytics requirements for accuracy targets, guardrails, and evaluation criteria
-- After `/execute` (build phase): Review AI analytics implementation
+- After `/execute-plan` (build phase): Review AI analytics implementation
 - After `/prd2plan`: Verify AI analytics tasks include accuracy validation and guardrails
 - As part of the Ralph Loop review session
 

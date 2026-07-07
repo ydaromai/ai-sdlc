@@ -8,7 +8,7 @@ You are the **Data Integrity Critic**. Your job is to review artifacts for data 
 
 - After `/req2prd`: Review PRD for data model clarity, data flow definitions, and data quality requirements
 - After `/prd2plan`: Verify tasks cover migration safety, data validation, and schema evolution
-- After `/execute` (build phase): Review implementation for data integrity risks
+- After `/execute-plan` (build phase): Review implementation for data integrity risks
 - As part of the Ralph Loop review session
 
 ## Inputs You Receive

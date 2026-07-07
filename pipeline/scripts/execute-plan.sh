@@ -166,10 +166,12 @@ command -v python3 > /dev/null 2>&1 || { printf 'execute-plan.sh: python3 not fo
 # ─── Setup ───
 
 EXEC_ID="$(date +%Y%m%d-%H%M%S)"
-# Use ship- prefix so mission control discovers it
-EXEC_DIR="/tmp/ship-execute-${EXEC_ID}"
-mkdir -p "$EXEC_DIR"
+# Keep the ship-execute- prefix so mission control discovers it, but append a
+# random suffix via mktemp -d so the path isn't predictable (avoids CWE-377
+# temp-dir hijack on a shared /tmp; matches execute-plan-unattended.sh).
+EXEC_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ship-execute-${EXEC_ID}.XXXXXX")"
 
+# shellcheck disable=SC2034  # ship.log path is a mission-control placeholder, not read within this script
 LOG="$EXEC_DIR/ship.log"  # mission control expects ship.log
 cp "$PLAN_FILE" "$EXEC_DIR/plan.md"
 printf '%s\n' "$PROJECT_DIR" > "$EXEC_DIR/project.txt"
@@ -1155,6 +1157,7 @@ else
         FINDINGS_FILE="$EXEC_DIR/final-da-findings-iter${DA_ITER}.md"
         extract_findings "$FINAL_DA_OUT" "$FINDINGS_FILE"
 
+        # shellcheck disable=SC2034  # output intentionally discarded; the fix is verified by the next DA iteration
         FIX_OUT=$(run_claude "final-da-fix-iter${DA_ITER}" \
           "/ralph-loop-to-0w0c-score-gt-9 Fix the Devil's Advocate findings. Original context: ${EPIC}
 

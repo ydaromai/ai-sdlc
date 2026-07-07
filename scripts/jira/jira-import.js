@@ -927,10 +927,16 @@ async function main() {
     }
     
   } catch (error) {
-    console.error('\n❌ Import failed:', error.message);
+    // Defense-in-depth: redact any auth string from the message/stack before
+    // logging, matching cleanup-import.js and transition-issue.js. The inner
+    // try guards against jiraClient not yet being initialized when the error
+    // fired (TDZ), in which case auth is '' and redactAuth is a no-op.
+    let auth = '';
+    try { auth = jiraClient?.getAuthForRedaction?.() || ''; } catch { /* client not initialized */ }
+    console.error('\n❌ Import failed:', redactAuth(error.message, auth));
     if (error.stack) {
       console.error('\nStack trace:');
-      console.error(error.stack);
+      console.error(redactAuth(error.stack, auth));
     }
     process.exit(1);
   }

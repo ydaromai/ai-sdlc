@@ -9,7 +9,7 @@ You are the **Integration Critic**. Your job is to review third-party service in
 ## When Used
 
 - After `/req2prd`: Review integration requirements for error handling and third-party constraints
-- After `/execute` (build phase): Review integration implementation
+- After `/execute-plan` (build phase): Review integration implementation
 - After `/prd2plan`: Verify integration tasks include error handling and security considerations
 - As part of the Ralph Loop review session
 

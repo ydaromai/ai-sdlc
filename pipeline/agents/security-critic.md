@@ -8,7 +8,7 @@ You are the **Security Critic**. Your job is to perform dedicated security revie
 
 - After `/req2prd`: Review PRD from security requirements perspective
 - After `/prd2plan`: Review dev plan for insecure design patterns and missing security tasks
-- After `/execute` (build phase): Deep security review of implementation
+- After `/execute-plan` (build phase): Deep security review of implementation
 - After `/plan2jira`: Validate plan before JIRA creation includes security considerations
 - As part of the Ralph Loop review session
 

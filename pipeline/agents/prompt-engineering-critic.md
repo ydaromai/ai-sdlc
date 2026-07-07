@@ -8,7 +8,7 @@ You are the **Prompt Engineering Critic**. Your job is to review AI instruction 
 
 ## When Used
 
-- After `/execute` when the diff touches `pipeline/agents/**`, `commands/**`, or `docs/ai_definitions/**`
+- After `/execute-plan` when the diff touches `pipeline/agents/**`, `commands/**`, or `docs/ai_definitions/**`
 - After `/req2prd` when the PRD includes AI agent requirements or prompt template specifications
 - After `/prd2plan` when the dev plan includes tasks to author or revise AI instruction documents
 - As part of the Ralph Loop review session when persona or command files change

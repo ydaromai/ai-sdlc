@@ -70,8 +70,8 @@ The concrete devflow chain — see `docs/ai_definitions/PIPELINE.md` for the aut
 ```
 raw idea / @refs / Figma
   → /discuss      → docs/requirements/REQ-NNN-<slug>.md   (orchestrator drafts; NO builder, NO critics)
-  → /req2prd      → docs/prd/<slug>.md                    (prd-expert builder + 7 critics, scored ≥9.0)
-  → /prd2plan     → docs/dev_plans/<slug>.md              (dev-plan-expert builder + 7 critics, 0C/0W)
+  → /req2prd      → docs/prd/<slug>.md                    (prd-expert builder + 7–12 affinity-matrix critics, scored ≥9.0)
+  → /prd2plan     → docs/dev_plans/<slug>.md              (dev-plan-expert builder + 7–12 affinity-matrix critics, 0C/0W)
   → /execute-plan → code on feat/execute-<slug>           (per-story ralph loop — domain expert + Devil's Advocate)
 ```
 

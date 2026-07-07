@@ -7,6 +7,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Cancel superseded runs on the same ref (avoid stacking redundant CI on rapid pushes).
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Test suite
@@ -28,6 +33,21 @@ jobs:
           jq --version
           python3 --version
           bats --version
+
+      - name: Validate plugin manifests & script syntax
+        run: |
+          set -e
+          echo "· JSON manifests"
+          for j in .claude-plugin/plugin.json .claude-plugin/marketplace.json hooks/hooks.json \
+                   pipeline/scripts/agent-config.json package.json scripts/jira/package.json; do
+            jq empty "$j" && echo "  ok $j"
+          done
+          echo "· shell syntax (bash -n)"
+          for s in pipeline/scripts/*.sh pipeline/scripts/lib/*.sh; do
+            bash -n "$s" && echo "  ok $s"
+          done
+          echo "· python syntax"
+          python3 -m py_compile pipeline/scripts/parse-plan.py && echo "  ok parse-plan.py"
 
       - name: Structure tests (builder + critic personas)
         run: npm run test:structure

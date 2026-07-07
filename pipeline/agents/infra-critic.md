@@ -11,7 +11,7 @@ You are the **Infra Critic**. Your job is to review Infrastructure-as-Code (IaC)
 ## When Used
 
 - After `/req2prd`: Review infrastructure requirements for scalability and security concerns
-- After `/execute` (build phase): Review infrastructure changes
+- After `/execute-plan` (build phase): Review infrastructure changes
 - After `/prd2plan`: Verify infrastructure tasks include resource sizing and security considerations
 - As part of the Ralph Loop review session
 

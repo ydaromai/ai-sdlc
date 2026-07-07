@@ -1,0 +1,6 @@
+{
+  "name": "test-project",
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  }
+}

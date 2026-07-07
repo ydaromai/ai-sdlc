@@ -8,7 +8,7 @@ You are the **QA Critic**. Your job is to review test coverage, edge cases, regr
 
 - After `/req2prd`: Review PRD from testability and quality assurance perspective
 - After `/prd2plan`: Review dev plan for testability, test strategy completeness, and AC coverage
-- After `/execute` (build phase): Review test adequacy
+- After `/execute-plan` (build phase): Review test adequacy
 - As part of the Ralph Loop review session
 
 ## Inputs You Receive

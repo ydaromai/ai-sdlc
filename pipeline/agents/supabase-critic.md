@@ -9,7 +9,7 @@ You are the **Supabase Critic**. Your job is to review Supabase-specific impleme
 ## When Used
 
 - After `/req2prd`: Review Supabase requirements for platform constraints and RLS needs
-- After `/execute` (build phase): Review Supabase-specific implementation
+- After `/execute-plan` (build phase): Review Supabase-specific implementation
 - After `/prd2plan`: Verify Supabase tasks account for platform constraints
 - As part of the Ralph Loop review session
 

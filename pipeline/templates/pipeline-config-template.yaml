@@ -52,23 +52,6 @@ pipeline:
       pre_merge:
         critics: [dev, devops, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
         mode: sequential        # DevOps reviews after Dev passes
-      # TDD pipeline stages (used by /tdd-fullpipeline)
-      tdd_design_brief:
-        critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
-        mode: parallel
-      tdd_mock_analysis:
-        critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
-        mode: parallel
-      tdd_test_plan:
-        critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
-        mode: parallel
-      tdd_develop_tests:
-        critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
-        mode: parallel
-      tdd_validate:
-        critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
-        mode: parallel
-
   # PRD quality scoring thresholds
   scoring:
     per_critic_min: 8.5         # Minimum score per critic (1-10 scale)
@@ -115,9 +98,9 @@ pipeline:
     # "ai-predictions/**": [unit, integration]
     # "anomaly/**": [unit, integration]
 
-  # Pre-delivery smoke test (Step 5 of /execute)
-  # Canonical schema is in commands/execute.md — keep both in sync.
-  # When this section is omitted, /execute uses auto-detection from has_frontend/has_backend_service flags.
+  # Pre-delivery smoke test (Step 5 of /execute-plan)
+  # Canonical schema is in commands/execute-plan.md — keep both in sync.
+  # When this section is omitted, /execute-plan uses auto-detection from has_frontend/has_backend_service flags.
   # Uncomment and customize to override auto-detection.
   # smoke_test:
   #   enabled: true                  # set to false to skip (e.g., libraries, CLI tools, data pipelines)
@@ -159,56 +142,6 @@ pipeline:
   #   visual_regression: false                   # Enable visual regression testing (deferred — not yet implemented)
   #   auto_install: false                        # Auto-install Playwright browsers in CI (default: false; never installs without consent)
 
-  # TDD Pipeline settings (/tdd-fullpipeline)
-  # Controls the TDD pipeline variant behavior. When omitted, defaults apply.
-  # Uncomment and customize to override defaults.
-  # tdd:
-  #   max_mock_routes: 20              # Maximum routes to crawl during Mock Analysis (default: 20)
-  #   self_health_gate: true           # Require all tests to fail before app code (default: true)
-  #   max_test_adjustment_pct: 20      # Maximum % of behavioral Tier 1 E2E adjustments before halt (default: 20)
-  #   metrics_dir: ".pipeline/metrics" # Directory for pipeline self-metrics JSON files
-  #   tests_branch_pattern: "tdd/{slug}/tests"  # Branch pattern for red test commits
-  #   tdd_stages:                      # Per-stage critic overrides for TDD pipeline
-  #     design_brief:
-  #       critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
-  #       mode: parallel
-  #     mock_analysis:
-  #       critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
-  #       mode: parallel
-  #     test_plan:
-  #       critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
-  #       mode: parallel
-  #     develop_tests:
-  #       critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
-  #       mode: parallel
-  #     develop_app:
-  #       critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
-  #       mode: parallel
-  #     validate:
-  #       critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
-  #       mode: parallel
-
-  # Test verification stage (Stage 5 of /fullpipeline, or run standalone via /test)
-  # Controls the /test command behavior. When omitted, /test uses defaults.
-  # Uncomment and customize to override defaults.
-  # test_stage:
-  #   enabled: true                          # set to false to skip Stage 5 entirely
-  #   max_fix_iterations: 3                  # max Ralph Loop iterations for test generation and fix cycles
-  #   coverage_thresholds:
-  #     lines: 80                            # minimum line coverage % for changed files (Warning, not blocking)
-  #   ci_audit:
-  #     fix_commented_jobs: false            # set to true to auto-fix commented-out CI jobs
-  #     config_paths: []                     # additional CI config file paths to scan (e.g., [".buildkite/pipeline.yml"])
-  #   critic_validation:
-  #     critics: [product, dev, devops, qa, security, performance, data-integrity]  # always-on critics; conditional critics (observability, api-contract, designer, ml) are added automatically based on has_backend_service/has_api/has_frontend/has_ml flags
-  #     max_iterations: 3                    # max fix iterations for critic failures
-
-  # Staging deployment (Stages 8–10 of /fullpipeline and /tdd-fullpipeline)
-  # Required for staging verification stages. If omitted, Stages 8–10 are skipped.
-  # staging:
-  #   deploy_command: "npm run deploy:staging"    # Command to deploy to staging (required)
-  #   url: "https://staging.example.com"          # Staging environment URL (required)
-
   # Project-specific paths (override per project)
   paths:
     prd_dir: "docs/prd"
@@ -218,4 +151,3 @@ pipeline:
     pipeline_definition: "docs/ai_definitions/PIPELINE.md"   # canonical devflow stage map (read by /devflow, /clear_and_go, /trace-upstream)
     jira_import: "scripts/jira/jira-import.js"
     jira_transition: "scripts/jira/transition-issue.js"
-    validate_breakdown: "scripts/ai_development/validate-breakdown.js"

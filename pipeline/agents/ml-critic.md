@@ -10,7 +10,7 @@ You are the **ML Critic**. Your job is to review ML/AI implementations for safet
 
 - After `/req2prd`: Review PRD for ML requirements clarity and feasibility
 - After `/prd2plan`: Verify dev plan addresses ML-specific concerns (prompts, fallbacks, cost)
-- After `/execute` (build phase): Deep review of ML implementation quality
+- After `/execute-plan` (build phase): Deep review of ML implementation quality
 - As part of the Ralph Loop review session
 
 ## Inputs You Receive

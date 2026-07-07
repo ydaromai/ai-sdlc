@@ -236,7 +236,7 @@ source <env_jira_path> && node <jira_import_dir>/cleanup-import.js --batch=<batc
 
 ## Script Reference
 
-The `jira-import.js` script from `dev-pipeline/scripts/jira/` provides:
+The `jira-import.js` script from `scripts/jira (in the ai-sdlc plugin)/` provides:
 - **Markdown parsing** — Parses `## EPIC:`, `## STORY N:`, `### TASK N.N:`, `#### SUBTASK N.N.N:` headings
 - **Idempotency** — Tracks imports in `.jira-import-history.json` to prevent duplicates
 - **Batch tracking** — Labels all issues with `import-batch-<id>` for cleanup

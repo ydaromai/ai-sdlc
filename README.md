@@ -102,11 +102,13 @@ This detects your stack, writes a `pipeline.config.yaml`, scaffolds the `docs/` 
 /execute-plan docs/dev_plans/csv-export.md
 ```
 
-…or chain from the top and let each stage hand off automatically:
+…or hand the whole line to the orchestrator, which runs all four core stages with a human gate between each:
 
 ```
-/discuss "Add CSV export to the revenue dashboard" --chain
+/devflow "Add CSV export to the revenue dashboard"
 ```
+
+(`/discuss … --chain` is a lighter shortcut — it auto-invokes only the next stage, `/req2prd`, on the finished requirement doc; it does not run the full pipeline.)
 
 **3. Review and iterate** at any point:
 
@@ -126,10 +128,10 @@ This detects your stack, writes a `pipeline.config.yaml`, scaffolds the `docs/` 
 | 1 | **Discuss** | `/discuss` | raw description + refs + Figma → `docs/requirements/REQ-NNN-*.md` |
 | 2 | **PRD** | `/req2prd` | requirement → critic-validated `docs/prd/<slug>.md` |
 | 3 | **Dev plan** | `/prd2plan` | PRD → dependency-aware `docs/dev_plans/<slug>.md` (Epic → Story → Task → Subtask) |
-| 4 | **Tracker** *(optional)* | `/plan2jira` **or** `/plan2linear` | dev plan → JIRA or Linear issues, plan updated with links |
-| 5 | **Execute** | `/execute-plan` | dev plan → implemented code, built and reviewed to 0W/0C via Ralph Loop + DA |
+| 3.5 | **Tracker** *(optional)* | `/plan2jira` **or** `/plan2linear` | dev plan → JIRA or Linear issues, plan updated with links |
+| 4 | **Execute** | `/execute-plan` | dev plan → implemented code, built and reviewed to 0W/0C via Ralph Loop + DA |
 
-Each artifact-producing stage (2, 3) runs a **critic panel** and won't pass until it clears the configured score thresholds. Stage 4 runs a **mandatory Dev + Product critic gate** before creating any issues. Stage 5 runs, per story, a build→review loop plus a Devil's Advocate pass, then a final DA over all changes.
+Each artifact-producing stage (2, 3) runs a **critic panel** and won't pass until it clears the configured score thresholds. The optional tracker stage (3.5) runs a **mandatory Dev + Product critic gate** before creating any issues. Stage 4 runs, per story, a build→review loop plus a Devil's Advocate pass, then a final DA over all changes. (Stage numbering matches the canonical map in `docs/ai_definitions/PIPELINE.md` — four core stages plus optional 3.5; the checkpoint schema tracks `current_stage` 1–4.)
 
 ---
 
@@ -241,7 +243,7 @@ Both stage-4 commands run the same mandatory Dev + Product critic gate on the pl
 
 ## How it works under the hood
 
-**Locating bundled files.** Claude Code does *not* expand `${CLAUDE_PLUGIN_ROOT}` inside slash-command markdown — only in hook/MCP configs. So `ai-sdlc` ships a `SessionStart` hook (`hooks/hooks.json`) that runs `pipeline/scripts/write-root.sh` and records the installed plugin path in `~/.ai-sdlc/root`. Every command begins by reading that file and substituting it for the `{{AISDLC_ROOT}}` placeholder in its bundled paths. This is what makes the plugin portable across machines with no per-install path rewriting.
+**Locating bundled files.** Claude Code does *not* expand `${CLAUDE_PLUGIN_ROOT}` inside slash-command markdown — only in hook/MCP configs. So `ai-sdlc` ships a `SessionStart` hook (`hooks/hooks.json`) that runs `pipeline/scripts/write-root.sh` and records the installed plugin path in `~/.ai-sdlc/root`. Every command that references bundled files (all except `/ask` and `/discuss`, which don't) begins by reading that file and substituting it for the `{{AISDLC_ROOT}}` placeholder in its bundled paths. This is what makes the plugin portable across machines with no per-install path rewriting.
 
 **Deterministic orchestration.** The shell scripts in `pipeline/scripts/` own the parts that must be reliable:
 
@@ -276,8 +278,10 @@ ai-sdlc/
 │   │   ├── write-root.sh        # publishes plugin root for commands
 │   │   ├── execute-plan*.sh · select-agents.sh · glob-match.sh
 │   │   ├── parse-scores.sh · parse-plan.py · agent-config.json
+│   │   ├── post-build.sh · check-uncalled.sh · check-output.sh   # ralph-loop build checks
 │   │   └── lib/helpers.sh
-│   └── templates/               # PRD, task-breakdown, config, agent-constraints, telemetry
+│   └── templates/               # PRD, task-breakdown, config, agent-constraints, telemetry,
+│                                # ralph-{build,review,fix,da}-prompt, ci-guidelines, pipeline-definition
 ├── scripts/jira/                # JIRA integration Node package (for /plan2jira)
 ├── examples/example-prd.md
 ├── test/                        # bats + node structure/behavior tests
@@ -295,7 +299,7 @@ npm run test:scripts     # bats — shell script behavior
 npm run test:jira        # node --test — JIRA package
 ```
 
-The shipped suite covers the pipeline scripts (`glob-match`, `parse-scores`, `select-agents`, `helpers`, `execute-plan-unattended`, `execute-plan-monitor`), the agent-file structure for all 23 builders and 19 critics, and the JIRA import/parse/ADF logic — all green.
+The shipped suite covers the pipeline scripts (`glob-match`, `parse-scores`, `select-agents`, `helpers` incl. the `da_passed`/`count_cw` quality-gate parsers, `write-root`, `check-output`, `check-uncalled`, `post-build`, `execute-plan-unattended`, `execute-plan-monitor`), the agent-file structure for all 23 builders and 19 critics, and the JIRA import/parse/ADF logic — all green.
 
 Requires [`bats`](https://github.com/bats-core/bats-core) for the shell suite (`brew install bats-core`).
 

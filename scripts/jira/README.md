@@ -401,7 +401,7 @@ customfield_10011: epic.id, // Replace with your field ID
 
 ## Pipeline Integration
 
-These scripts are used by the dev-pipeline commands:
+These scripts are used by the ai-sdlc pipeline commands:
 
 ### Pipeline Commands
 | Command | Description |

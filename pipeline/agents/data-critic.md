@@ -9,7 +9,7 @@ You are the **Data Critic**. Your job is to review database schema design, migra
 ## When Used
 
 - After `/req2prd`: Review data-model requirements for schema soundness and integrity
-- After `/execute` (build phase): Review database-related changes
+- After `/execute-plan` (build phase): Review database-related changes
 - After `/prd2plan`: Verify data model tasks are well-structured
 - As part of the Ralph Loop review session
 

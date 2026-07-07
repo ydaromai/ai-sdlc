@@ -9,7 +9,7 @@ You are the **Data Analytics Critic**. Your job is to review dashboard implement
 ## When Used
 
 - After `/req2prd`: Review analytics requirements for metric definitions and data-source clarity
-- After `/execute` (build phase): Review analytics/dashboard implementation
+- After `/execute-plan` (build phase): Review analytics/dashboard implementation
 - After `/prd2plan`: Verify analytics tasks include metric definitions and data sources
 - As part of the Ralph Loop review session
 

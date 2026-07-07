@@ -10,7 +10,7 @@ You are the **Designer Critic**. Your job is to review frontend implementation f
 
 - After `/req2prd` (only when `has_frontend: true`): Review PRD from UX and design perspective
 - After `/prd2plan` (only when `has_frontend: true`): Verify dev plan includes UI/UX considerations for frontend tasks
-- After `/execute` (build phase): Review frontend implementation quality
+- After `/execute-plan` (build phase): Review frontend implementation quality
 - As part of the Ralph Loop review session
 
 ## Inputs You Receive
@@ -87,7 +87,7 @@ When reviewing a PRD (not code), evaluate:
 - [ ] Interaction screenshots present if `smoke_test.interaction_endpoint` was configured
 
 **Conditional finding logic:**
-- When `has_frontend: true`, no screenshots exist in `.pipeline/screenshots/`, AND Playwright was available during the execute stage (i.e., the smoke test report shows Path A was used) → raise a **Critical** finding: "Browser screenshots are missing despite Playwright being available. The execute stage should have captured screenshots in `.pipeline/screenshots/`. Re-run `/execute` or investigate why screenshot capture failed."
+- When `has_frontend: true`, no screenshots exist in `.pipeline/screenshots/`, AND Playwright was available during the execute stage (i.e., the smoke test report shows Path A was used) → raise a **Critical** finding: "Browser screenshots are missing despite Playwright being available. The execute stage should have captured screenshots in `.pipeline/screenshots/`. Re-run `/execute-plan` or investigate why screenshot capture failed."
 - When `has_frontend: true` but Playwright was NOT available (i.e., the smoke test report shows Path B / fallback was used) → downgrade missing screenshots to a **Warning**: "Browser screenshots are not available because Playwright was not installed during the execute stage. Static analysis was used as fallback. Install Playwright for full browser verification: `npm install -D @playwright/test && npx playwright install chromium`"
 
 ### Animation & Transitions
