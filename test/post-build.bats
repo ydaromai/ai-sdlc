@@ -125,6 +125,8 @@ FIXTURES="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/fixtures/post-build"
   tmpdir=$(mktemp -d)
   cd "$tmpdir"
   git init -q
+  git config user.email ci@example.com
+  git config user.name "CI"
   echo "hello" > readme.txt
   git add readme.txt
   git commit -q -m "init"
@@ -146,6 +148,8 @@ FIXTURES="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/fixtures/post-build"
   tmpdir=$(mktemp -d)
   cd "$tmpdir"
   git init -q
+  git config user.email ci@example.com
+  git config user.name "CI"
   echo '#!/usr/bin/env bash' > test.sh
   echo 'echo "hello"' >> test.sh
   chmod +x test.sh
@@ -169,6 +173,8 @@ FIXTURES="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/fixtures/post-build"
   tmpdir=$(mktemp -d)
   cd "$tmpdir"
   git init -q
+  git config user.email ci@example.com
+  git config user.name "CI"
   echo '#!/usr/bin/env bash' > bad.sh
   git add bad.sh
   git commit -q -m "init"

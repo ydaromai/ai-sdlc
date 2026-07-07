@@ -28,6 +28,11 @@ jobs:
       - name: Install bats
         run: sudo apt-get update && sudo apt-get install -y bats
 
+      - name: Configure git identity (some bats create temp repos + commit)
+        run: |
+          git config --global user.email "ci@example.com"
+          git config --global user.name "CI"
+
       - name: Verify toolchain (jq, python3, bats)
         run: |
           jq --version
