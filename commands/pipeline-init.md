@@ -257,6 +257,15 @@ mkdir -p docs/prd
 mkdir -p docs/dev_plans
 mkdir -p docs/ai_definitions
 mkdir -p docs/seeds
+mkdir -p docs/pipeline-state          # TDD/devflow checkpoint state files
+mkdir -p docs/tdd                      # TDD artifacts: design briefs, UI contracts, visual systems, test plans
+```
+
+The TDD pipeline also writes gitignored runtime artifacts under `.pipeline/` (screenshots, baseline results, metrics). Ensure `.gitignore` excludes them so a `git add -A` never commits them:
+
+```bash
+grep -qxF '.pipeline/metrics/' .gitignore 2>/dev/null || \
+  printf '\n# ai-sdlc TDD pipeline runtime artifacts\n.pipeline/tdd/*/mock-screenshots/\n.pipeline/tdd/*/build-screenshots/\n.pipeline/tdd/*/baseline-results.json\n.pipeline/metrics/\n' >> .gitignore
 ```
 
 ## Step 7: Create missing foundation files

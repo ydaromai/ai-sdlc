@@ -1,12 +1,13 @@
 {
   "name": "ai-sdlc",
-  "version": "1.0.0",
-  "description": "AI-driven software delivery lifecycle for Claude Code — a clean, dependency-aware pipeline: discuss → req2prd → prd2plan → (plan2jira | plan2linear) → execute-plan, backed by 23 expert builder agents, 19 critic agents with a domain-matched affinity matrix, a mandatory Devil's Advocate adversarial gate, and shell-orchestrated plan execution with ralph-loop quality gates.",
+  "version": "1.1.0",
+  "description": "AI-driven software delivery lifecycle for Claude Code. Two pipelines: (1) a clean, dependency-aware core pipeline — discuss → req2prd → prd2plan → (plan2jira | plan2linear) → execute-plan; and (2) an end-to-end test-driven pipeline (a \"dark factory\") that authors tests before code against a real mock app or Figma design, then builds to green — runnable fully lights-out via tdd-unattended.sh. Backed by 23 expert builder agents, 19 critic agents with a domain-matched affinity matrix, a mandatory Devil's Advocate adversarial gate, and shell-orchestrated execution with ralph-loop quality gates.",
   "author": { "name": "Yohai Darom" },
   "repository": "https://github.com/ydaromai/ai-sdlc",
   "license": "MIT",
   "keywords": [
     "ai-sdlc", "pipeline", "prd", "dev-plan", "critics", "expert-agents",
-    "ralph-loop", "devils-advocate", "jira", "linear", "code-review"
+    "ralph-loop", "devils-advocate", "jira", "linear", "code-review",
+    "tdd", "test-driven", "e2e", "dark-factory", "visual-fidelity", "playwright", "figma"
   ]
 }

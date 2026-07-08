@@ -14,6 +14,8 @@
 
 Run it stage by stage, or hand the whole line to **`/devflow`** to orchestrate it end to end (with `/clear_and_go` checkpoints and `/trace-upstream` for root-cause analysis).
 
+**Two pipelines, one plugin.** The line above is the **core pipeline** — stage-by-stage, *build-then-verify*, with a human gate between each artifact. For UI-bearing features there's a second, deeper track: the **TDD pipeline** — a 16-stage *test-driven factory* that authors the tests (against a real mock app or Figma design) **before** any code, then builds to green. Run it hands-on, or hand it to **`tdd-unattended.sh`** to run it **lights-out, end to end** — a genuine [dark factory](#the-tdd-pipeline-an-end-to-end-test-driven-factory).
+
 Three commands work across every stage:
 
 | Command | Use anywhere to… |
@@ -32,6 +34,7 @@ And `/validate` runs the critic panel against any artifact (PRD, dev plan, or co
 - [Install](#install)
 - [Quick start](#quick-start)
 - [The pipeline, stage by stage](#the-pipeline-stage-by-stage)
+- [The TDD pipeline: an end-to-end test-driven factory](#the-tdd-pipeline-an-end-to-end-test-driven-factory)
 - [Command reference](#command-reference)
 - [The agents](#the-agents)
 - [Configuration](#configuration)
@@ -135,6 +138,84 @@ Each artifact-producing stage (2, 3) runs a **critic panel** and won't pass unti
 
 ---
 
+## The TDD pipeline: an end-to-end test-driven factory
+
+The core pipeline builds, then checks. The **TDD pipeline** inverts that: it turns your requirement and a real UI into an executable contract, writes the tests **before** the code, then builds until they pass. It's a longer, deeper line — **16 stages (17 with Figma)** — for UI-bearing features where "does it match the design and behave to spec" is the whole game.
+
+### Core vs. TDD — which line to run
+
+| | Core pipeline | TDD pipeline |
+|---|---|---|
+| **Command** | `/devflow` (or stage by stage) | `/tdd-fullpipeline` · `/tdd-figma-fullpipeline` |
+| **Shape** | 4 linear stages | 16–17 stages; forks for design + tiered tests |
+| **Order** | build → then write tests | **write tests first → then build to green** |
+| **Who writes the tests** | the agent that also writes the code | a **blind agent** that never sees the code or the plan |
+| **UI truth** | inferred from prose | a **contract** extracted from a real mock app or Figma design |
+| **Best for** | services, APIs, logic, refactors | UI features that must match a design *and* a spec |
+| **Autonomy** | gated per stage; `/devflow` for hands-off | gated per stage; **`tdd-unattended.sh` for lights-out** |
+
+### What "test-driven" actually changes
+
+Five guarantees the core pipeline doesn't make — all aimed at verifying **requirements**, not implementation:
+
+1. **Reordering** — tests are authored in Stages 7–8, *before* code lands in Stage 9. They encode required behavior, not observed behavior.
+2. **Blind authoring** — the Tier-1/Tier-2 test agents are forbidden to read the dev plan or the app source. They see only the PRD, the UI contract, the visual system, and the test plan.
+3. **A real UI + visual contract** — Stages 2–3 derive a `data-testid` selector registry plus a visual system (tokens, variants, animation specs) from a built mock app (or Figma). Those become test assertions instead of guesses.
+4. **Red-before-green self-health** — every test must **fail** before any code exists (`red_count == total`), which catches fake, always-green tests.
+5. **A test-adjustment taxonomy** — during execution the builder may bend the pre-written tests only within caps (security tests immutable; behavioral edits ≤ ~20%), so it can't move the goalposts to fit the code.
+
+Plus a dedicated **visual-fidelity review** (mock/Figma vs. build screenshots) and a full **local → staging** validation tail (Stages 13–16) the linear pipeline doesn't have.
+
+### The 16 stages
+
+```
+ 1  Requirement → PRD               /req2prd
+ 2  PRD → Design Brief              /tdd-design-brief          [manual: build the mock]
+ 3  Mock/Figma → UI Contract        /tdd-mock-analysis + /tdd-source-analysis
+      + Visual System                 (Figma: /tdd-figma-analysis + /tdd-figma-design-system)
+ 4  PRD + UI Contract → Test Plan   /tdd-test-plan
+ 5  PRD + Test Plan → Dev Plan      /prd2plan
+ 6  Dev Plan → JIRA (optional)      /plan2jira
+ 7  Develop Tier-1 E2E tests        /tdd-develop-tests         [blind agent]
+ 8  Develop Tier-2 tests            /tdd-develop-tier2-tests   [blind agent]
+ 9  Execute — build to green        /execute                   [test-adjustment taxonomy]
+ 9.5 Figma Code Connect (Figma)     /tdd-code-connect
+10  Validate      11  Product review   12  Designer visual-fidelity review
+13  E2E local     14  Deploy staging   15  Tests vs staging   16  E2E vs staging
+```
+
+Each stage runs in a **fresh context** — the orchestrator stays lightweight, persisting every artifact to disk and committing it, so nothing needs to carry between stages.
+
+### Lights-out — the dark factory
+
+By default the TDD pipeline is **gated for correctness**: it stops at every stage for a human `approve / edit / abort`. That's the safe default, not a limitation — a human reviews *what the machine contracted and built* at each station.
+
+Add **`--unattended`** (or `tdd.unattended: true` in config) and the same line runs **lights-out**. The `tdd-unattended.sh` driver invokes the orchestrator one stage per fresh context, reads `docs/pipeline-state/<slug>.json`, and re-invokes for the next stage — no human clearing and pasting. Gates **auto-approve unless a hard-stop trips**:
+
+- critic scores that can't self-heal to threshold,
+- a fake always-green test (`red_count != total`),
+- a test-adjustment cap breach,
+- an unfixable validate / E2E / staging failure,
+- (non-Figma) a missing mock at Stage 2.
+
+On a hard-stop the orchestrator writes `pipeline_status: "blocked"` with a reason and the driver stops for a human — it never forces past a block.
+
+```bash
+# non-Figma: supply the mock upfront so it never stops at the Stage-2 gate
+bash pipeline/scripts/tdd-unattended.sh \
+  --requirement "Add a saved-views panel to the reports page" \
+  --dir . --mock-url http://localhost:5173 --mock-src ../reports-mock
+
+# Figma variant: fully lights-out — zero human gates
+bash pipeline/scripts/tdd-unattended.sh \
+  --requirement "Add a saved-views panel to the reports page" \
+  --dir . --figma
+```
+
+**Honest scope:** the **Figma variant is fully lights-out** (the design exists upfront — no manual build). The **non-Figma variant** needs one upfront input — a mock app URL + source — after which it too runs with zero gates. Everything else the driver handles: API-outage waits, hang/stall guards, single-instance locking, and clean resume.
+
+---
+
 ## Command reference
 
 ### Pipeline commands
@@ -161,6 +242,23 @@ Each artifact-producing stage (2, 3) runs a **critic panel** and won't pass unti
 - **`/trace-upstream`** — Read-only upstream root-cause analysis: given a defect in a pipeline result, trace back through the deliverable chain (code → dev plan → PRD → requirement) to the **birthplace** stage, classify it, and route a two-altitude fix. Distinct from `/validate` (forward review) — this works backward from a symptom.
 
 > **`docs/ai_definitions/PIPELINE.md`** is the canonical stage map that `/devflow`, `/clear_and_go`, and `/trace-upstream` all read. `/pipeline-init` scaffolds it from `pipeline/templates/pipeline-definition-template.md`.
+
+### TDD pipeline commands
+
+The test-driven track (see [The TDD pipeline](#the-tdd-pipeline-an-end-to-end-test-driven-factory)). The two orchestrators drive everything else — you rarely invoke the stage commands directly.
+
+- **`/tdd-fullpipeline <requirement> [--unattended] [--mock-url <url> --mock-src <dir>]`** — The 16-stage TDD orchestrator (mock-app variant). Chains every stage below in fresh contexts. `--unattended` runs it lights-out (pairs with `tdd-unattended.sh`).
+- **`/tdd-figma-fullpipeline <requirement> [--unattended]`** — The 17-stage Figma variant: sources the design + design system directly from Figma (no manual mock build) and adds Stage 9.5 Code Connect. Fully lights-out under `--unattended`.
+- **`/tdd-design-brief`** — PRD → functional Design Brief (routes, flows, components, data needs).
+- **`/tdd-mock-analysis`** — Crawls a running mock app (Playwright, 3 viewports) → UI contract (`data-testid` selector registry).
+- **`/tdd-source-analysis`** — Static companion to mock-analysis: reads the mock's source → visual system (tokens, variants, animation specs).
+- **`/tdd-figma-analysis`** · **`/tdd-figma-design-system`** — Figma-MCP equivalents of the two analysis stages.
+- **`/tdd-test-plan`** — PRD + UI contract → tiered test plan (Tier-1 E2E / Tier-2 integration + unit).
+- **`/tdd-develop-tests`** — Blind agent: Tier-1 E2E Playwright tests from PRD + contract + plan (red before code exists).
+- **`/tdd-develop-tier2-tests`** — Blind agent: Tier-2 integration/unit/component tests.
+- **`/tdd-code-connect`** — Bidirectional Figma Code Connect mappings (Figma variant, Stage 9.5).
+- **`/execute`** — In-context Ralph-Loop executor carrying the **test-adjustment taxonomy** (Stage 9). Distinct from `/execute-plan` (the core pipeline's shell orchestrator): the TDD line uses `/execute` because it enforces the caps on editing pre-written tests.
+- **`/scaffold`** — Foundation scaffold; runs conditionally between Stages 6–7 when `assumes_foundation: true`.
 
 ---
 
@@ -266,7 +364,7 @@ ai-sdlc/
 ├── .claude-plugin/
 │   ├── plugin.json              # plugin manifest
 │   └── marketplace.json         # marketplace index
-├── commands/                    # 14 pipeline/workflow commands + ralph-loop-to-0w0c-score-gt-9 (supporting)
+├── commands/                    # 28 commands: 14 core pipeline/workflow + 11 tdd-* + execute/scaffold + ralph-loop (supporting)
 ├── hooks/
 │   └── hooks.json               # SessionStart → write-root.sh
 ├── pipeline/
@@ -277,6 +375,8 @@ ai-sdlc/
 │   ├── scripts/                 # orchestration + selection + parsing
 │   │   ├── write-root.sh        # publishes plugin root for commands
 │   │   ├── execute-plan*.sh · select-agents.sh · glob-match.sh
+│   │   ├── tdd-unattended.sh    # lights-out driver for the TDD pipeline
+│   │   ├── preflight-e2e.sh · check-ownership.sh · check-migrations.sh   # TDD/execute checks
 │   │   ├── parse-scores.sh · parse-plan.py · agent-config.json
 │   │   ├── post-build.sh · check-uncalled.sh · check-output.sh   # ralph-loop build checks
 │   │   └── lib/helpers.sh
