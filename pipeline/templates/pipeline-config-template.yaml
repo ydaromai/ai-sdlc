@@ -21,6 +21,24 @@ pipeline:
   #     - manager
   #     - viewer
 
+  # TDD pipeline settings (used by /tdd-fullpipeline and /tdd-figma-fullpipeline)
+  tdd:
+    unattended: false                          # true = run lights-out (auto-approve gates unless a hard-stop trips); or pass --unattended
+    unattended_require_deploy_approval: false  # true = even unattended, stop for a human before the Stage 14 staging deploy
+    max_mock_routes: 20                        # cap on routes crawled during mock/Figma analysis
+    max_test_adjustment_pct: 20                # max % of pre-written behavioral tests the executor may edit (security tests are immutable)
+    tests_branch_pattern: "tdd/{slug}/tests"   # branch for Tier-1 tests (Tier-2 uses tdd/{slug}/tier2-tests)
+    self_health_gate: true                     # require all new tests RED before code exists (catches fake always-green tests)
+    generate_benchmarks: false                 # emit performance benchmarks during Tier-2 test development
+    # self_health_timeout_ms: 120000           # timeout for the red-before-green self-health check
+    # self_health_fix_timeout_ms: 300000       # timeout for auto-fixing self-health failures
+    # critic_iteration_timeout_ms: 600000      # timeout per critic Ralph-Loop iteration
+
+  # Staging deploy target (TDD Stages 14–16)
+  staging:
+    url: ""                                    # staging base URL for tests-vs-staging / E2E-vs-staging
+    deploy_command: ""                         # command that deploys the current branch to staging (e.g., "vercel deploy --prebuilt")
+
   # JIRA integration
   jira:
     project_key: PROJ           # Your JIRA project key (e.g., MVP, CD)
@@ -105,6 +123,8 @@ pipeline:
   # smoke_test:
   #   enabled: true                  # set to false to skip (e.g., libraries, CLI tools, data pipelines)
   #   # start_command: "pnpm dev"   # default: auto-detected from lockfile (omit to auto-detect)
+  #   port: 3000                     # dev-server port for health-check auto-detection (default 3000)
+  #   api_port: 3001                 # API server port for /health auto-detection (default: port + 1)
   #   startup_timeout_seconds: 30    # max wait for server readiness
   #   ready_patterns:                # case-insensitive substrings to match in server output (replaces defaults if set)
   #     - "ready"
