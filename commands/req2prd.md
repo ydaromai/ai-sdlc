@@ -236,13 +236,13 @@ Overall Score: <average of scored critics, excluding N/A>
 
 ### Scoring Ralph Loop
 
-**Expected duration:** Each iteration spawns a validation subagent that runs up to 10 parallel critic subagents using Opus. A full 3-iteration loop typically takes 5–10 minutes. Most PRDs converge within 2 iterations. If thresholds are not met after 3 iterations, the remaining findings are likely design opinions rather than quality gaps — escalate to the user rather than continuing to iterate. If the session is interrupted mid-loop, re-running `/req2prd` will detect the existing PRD draft on disk and ask whether to regenerate or resume validation.
+**Expected duration:** Each iteration spawns a validation subagent that runs up to 10 parallel critic subagents using Opus. A full 5-iteration loop typically takes 10–15 minutes. Most PRDs converge within 2 iterations. If thresholds are not met after `validation.max_iterations` iterations, the remaining findings are likely design opinions rather than quality gaps — escalate to the user rather than continuing to iterate. If the session is interrupted mid-loop, re-running `/req2prd` will detect the existing PRD draft on disk and ask whether to regenerate or resume validation.
 
 **Thresholds** (from `pipeline.config.yaml`, with defaults):
 - Per-critic minimum score: `scoring.per_critic_min` (default: **8.5**)
 - Overall minimum score: `scoring.overall_min` (default: **9.0**)
 - **Overall score formula:** `overall = sum(scores) / count(scored critics)` — N/A critics excluded from both numerator and denominator
-- Max iterations: `validation.max_iterations` (default: **3**)
+- Max iterations: `validation.max_iterations` (default: **5**, per the shipped config template)
 
 **Loop logic:**
 1. Collect scores from validation subagent
@@ -266,7 +266,7 @@ Overall Score: <average of scored critics, excluding N/A>
       ```
    b. After the fix subagent completes, spawn a NEW validation subagent (same prompt as above) — never reuse the previous one
    c. Re-run ALL critics (not just low-scoring ones — revisions can affect other scores)
-   d. Repeat (max 3 total iterations)
+   d. Repeat (up to `validation.max_iterations` total iterations — default 5)
 4. If thresholds not met after max iterations:
    - Present current scores to user
    - **If Security Critic scored below threshold:** flag explicitly — "Security score is below 8.5. Approving as-is accepts identified security risks. Review Security findings before proceeding."
