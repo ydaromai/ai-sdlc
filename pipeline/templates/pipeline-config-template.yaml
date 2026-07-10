@@ -80,7 +80,7 @@ pipeline:
   execution:
     ralph_loop:
       build_models:
-        simple: opus
+        simple: sonnet          # Sonnet — trivial single-file tasks (docs, copy, config)
         medium: opus            # Opus — Single-file logic, endpoints
         complex: opus           # Opus — Multi-file, complex logic
       review_model: opus        # Opus — review subagents
