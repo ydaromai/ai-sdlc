@@ -62,13 +62,13 @@ pipeline:
         mode: parallel
         mandatory: true         # Must pass before JIRA creation
       execute:
-        critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
+        critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml, dependency]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml), dependency (diff touches dependency manifests/lockfiles)
         mode: parallel
       test:
-        critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
+        critics: [product, dev, devops, qa, security, performance, data-integrity, observability, api-contract, designer, ml, dependency]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml), dependency (diff touches dependency manifests/lockfiles)
         mode: parallel
       pre_merge:
-        critics: [dev, devops, security, performance, data-integrity, observability, api-contract, designer, ml]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml)
+        critics: [dev, devops, security, performance, data-integrity, observability, api-contract, designer, ml, dependency]  # conditional: observability (has_backend_service), api-contract (has_api), designer (has_frontend), ml (has_ml), dependency (diff touches dependency manifests/lockfiles)
         mode: sequential        # DevOps reviews after Dev passes
   # PRD quality scoring thresholds
   scoring:

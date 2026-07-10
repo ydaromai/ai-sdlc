@@ -321,10 +321,16 @@ This project uses the global development pipeline (`{{AISDLC_ROOT}}/commands/`).
 | `/plan2jira @docs/dev_plans/<slug>.md` | Create JIRA issues from dev plan (optional) |
 | `/plan2linear @docs/dev_plans/<slug>.md` | Create Linear issues from dev plan (optional) |
 | `/execute-plan docs/dev_plans/<slug>.md` | Execute dev plan (shell orchestrator + Ralph Loop + DA) |
+| `/test @docs/dev_plans/<slug>.md` | Test verification gate — FACT REPORT distinguishing passed vs proven |
+| `/devflow <requirement>` | Run the lean pipeline end to end (discuss → PRD → plan → execute) |
+| `/fullpipeline <requirement>` | Run the full-ceremony pipeline (PRD → plan → tracker → execute → test) |
 | `/validate @<file>` | Run critic agents on any artifact or diff |
 | `/use-expert <task>` | Execute any task with expert builder agents |
 | `/devils-advocate [range]` | Adversarial review on any diff |
 | `/ask <question>` | Ask anything about the codebase, read-only |
+| `/ship <task>` | Mechanical release gate — shell-enforced quality sequence through commit |
+| `/gatekeeper` | Audit the quality gates themselves — real reviews vs rubber stamps |
+| `/reflect` | Sprint retro feeder — data-driven retro report from run telemetry |
 | `/pipeline-init` | Re-initialize pipeline config |
 
 ### Seeds (optional)

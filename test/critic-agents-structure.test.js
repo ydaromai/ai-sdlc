@@ -54,6 +54,7 @@ const EXPECTED_CRITICS = [
   'data-integrity-critic.md',
   'designer-critic.md',
   'ml-critic.md',
+  'dependency-critic.md',
 ];
 
 // ---------------------------------------------------------------------------
@@ -407,6 +408,65 @@ describe('Dev Critic analytics items', () => {
   });
 });
 
+describe('Dependency Critic supply-chain items', () => {
+  const content = readFileSync(join(AGENTS_DIR, 'dependency-critic.md'), 'utf8');
+
+  it('mentions slopsquatting in the Role section', () => {
+    const roleSection = extractSection(content, '## Role');
+    assert.ok(
+      roleSection.includes('slopsquatting'),
+      'Dependency Critic Role section should explain slopsquatting'
+    );
+  });
+
+  it('has Registry Verification section in Review Checklist', () => {
+    const checklistSection = extractSection(content, '## Review Checklist');
+    assert.ok(
+      checklistSection.includes('### Registry Verification'),
+      'Dependency Critic should have Registry Verification section within Review Checklist'
+    );
+  });
+
+  it('requires verification against the official registry', () => {
+    assert.ok(
+      content.includes('official registry'),
+      'Dependency Critic should require verification against the official registry'
+    );
+  });
+
+  it('covers typosquats, version pinning, licenses, and abandoned packages', () => {
+    for (const term of ['typosquat', 'pinned', 'License', 'abandoned']) {
+      assert.ok(
+        content.includes(term),
+        `Dependency Critic should mention: ${term}`
+      );
+    }
+  });
+
+  it('treats hallucinated packages as Critical in Guidelines', () => {
+    const guidelinesSection = extractSection(content, '## Guidelines');
+    assert.ok(
+      guidelinesSection.includes('hallucinated package') && guidelinesSection.includes('Critical'),
+      'Dependency Critic Guidelines should flag hallucinated packages as Critical'
+    );
+  });
+
+  it('has Dependency Delta table in output format', () => {
+    const outputSection = extractSection(content, '## Output Format');
+    assert.ok(
+      outputSection.includes('Dependency Delta'),
+      'Dependency Critic should have Dependency Delta table in output format'
+    );
+  });
+
+  it('includes N/A in checklist marks (skips cleanly when no dependency changes)', () => {
+    assert.ok(
+      content.includes('[x/✗/N/A]'),
+      'Dependency Critic should use [x/✗/N/A] checklist marks'
+    );
+  });
+});
+
 describe('Pipeline config template', () => {
   const content = readFileSync(
     join(__dirname, '..', 'pipeline', 'templates', 'pipeline-config-template.yaml'),
@@ -448,6 +508,22 @@ describe('Pipeline config template', () => {
     assert.ok(
       preMergeSection.includes('designer'),
       'pre_merge stage should include designer critic'
+    );
+  });
+
+  it('includes dependency in execute critics', () => {
+    const executeSection = extractYamlSection(content, 'execute');
+    assert.ok(
+      executeSection.includes('dependency'),
+      'execute stage should include dependency critic'
+    );
+  });
+
+  it('includes dependency in pre_merge critics', () => {
+    const preMergeSection = extractYamlSection(content, 'pre_merge');
+    assert.ok(
+      preMergeSection.includes('dependency'),
+      'pre_merge stage should include dependency critic'
     );
   });
 

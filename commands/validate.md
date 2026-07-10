@@ -9,7 +9,7 @@ You are executing the **validate** command. Run one or more critic agents agains
 - `/validate --diff` — validate the current git diff (staged + unstaged)
 - `/validate --diff --critics=dev,qa` — validate diff with specific critics only
 - `/validate --diff --domain=Frontend` — validate diff with domain-matched critics
-- `/validate --diff --all` — validate diff with all 19 critics (override matrix)
+- `/validate --diff --all` — validate diff with all 20 critics (override matrix)
 
 ---
 
@@ -52,7 +52,7 @@ Use the `critics` array from the JSON output. Do not manually interpret critic-a
 | PRD | **Artifact Review** | All critics with PRD Review Focus (7 always-on + conditional per config flags) |
 | Dev plan | **Artifact Review** | Same as PRD — comprehensive cross-domain review |
 | Code diff | **Code Review** | Domain-matched critics from affinity matrix |
-| Code diff + `--all` | **Full** | All 19 critics (override matrix) |
+| Code diff + `--all` | **Full** | All 20 critics (override matrix) |
 | Any + `--critics=` | **Manual** | Only the listed critics (override matrix) |
 
 ### Domain Inference for Code Review
