@@ -34,9 +34,10 @@
         "product-critic.md"
       ],
       "domain_critics": [
-        "data-integrity-critic.md"
+        "data-integrity-critic.md",
+        "dependency-critic.md"
       ],
-      "total_critics": 5
+      "total_critics": 6
     },
     "ML": {
       "priority": 2,
@@ -318,9 +319,10 @@
       "domain_critics": [
         "performance-critic.md",
         "api-contract-critic.md",
-        "observability-critic.md"
+        "observability-critic.md",
+        "dependency-critic.md"
       ],
-      "total_critics": 7
+      "total_critics": 8
     },
     "Testing": {
       "priority": 10,
@@ -396,9 +398,10 @@
       "domain_critics": [
         "devops-critic.md",
         "infra-critic.md",
-        "observability-critic.md"
+        "observability-critic.md",
+        "dependency-critic.md"
       ],
-      "total_critics": 6
+      "total_critics": 7
     },
     "Designer": {
       "priority": 12,
@@ -786,6 +789,66 @@
       "domain_critics": [],
       "total_critics": 2,
       "note": "Process domain, not a file domain. Empty file_patterns by design so it never wins file-based code_review routing — it routes only on task_signals via use_expert. Bug-fix review rigor lives in dev-critic.md and qa-critic.md (Bug-Fix Rigor section), so no paired debugging-critic exists."
+    },
+    "Dependencies": {
+      "priority": 24,
+      "file_patterns": [
+        "package.json",
+        "**/package.json",
+        "package-lock.json",
+        "**/package-lock.json",
+        "yarn.lock",
+        "**/yarn.lock",
+        "pnpm-lock.yaml",
+        "**/pnpm-lock.yaml",
+        "requirements.txt",
+        "**/requirements.txt",
+        "requirements*.txt",
+        "pyproject.toml",
+        "**/pyproject.toml",
+        "Pipfile",
+        "Pipfile.lock",
+        "go.mod",
+        "go.sum",
+        "**/go.mod",
+        "**/go.sum",
+        "Cargo.toml",
+        "Cargo.lock",
+        "**/Cargo.toml",
+        "**/Cargo.lock",
+        "Gemfile",
+        "Gemfile.lock",
+        "**/Gemfile",
+        "pom.xml",
+        "**/pom.xml",
+        "build.gradle",
+        "build.gradle.kts",
+        "**/build.gradle",
+        "**/build.gradle.kts",
+        "composer.json",
+        "composer.lock",
+        "**/composer.json"
+      ],
+      "task_signals": [
+        "dependency",
+        "package",
+        "library",
+        "upgrade",
+        "install",
+        "slopsquatting",
+        "supply chain"
+      ],
+      "builder": "devops-expert.md",
+      "core_critics": [
+        "dev-critic.md",
+        "security-critic.md",
+        "qa-critic.md"
+      ],
+      "domain_critics": [
+        "dependency-critic.md"
+      ],
+      "total_critics": 4,
+      "note": "Supply-chain domain: matches dependency manifests and lockfiles so any diff touching them pulls dependency-critic into the union critic set (anti-slopsquatting registry verification). Priority 24 — no other domain matches these files, and in mixed diffs the code domain stays primary while this domain contributes via union."
     }
   },
   "artifact_review": {

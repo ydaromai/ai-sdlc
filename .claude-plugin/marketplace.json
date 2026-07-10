@@ -10,7 +10,7 @@
     {
       "name": "ai-sdlc",
       "source": "./",
-      "description": "AI-driven software delivery lifecycle. Core pipeline: discuss → req2prd → prd2plan → (plan2jira | plan2linear) → execute-plan. Plus a test-driven e2e pipeline (a \"dark factory\") — tests authored before code from a mock app or Figma design, buildable lights-out. 23 builder agents, 19 critics, a Devil's Advocate gate.",
+      "description": "AI-driven software delivery lifecycle. Core pipeline: discuss → req2prd → prd2plan → (plan2jira | plan2linear) → execute-plan. Plus a test-driven e2e pipeline (a \"dark factory\") — tests authored before code from a mock app or Figma design, buildable lights-out. 23 builder agents, 20 critics, a Devil's Advocate gate.",
       "version": "1.1.0"
     }
   ]

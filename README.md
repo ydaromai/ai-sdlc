@@ -4,7 +4,7 @@
 
 **An AI-driven software delivery lifecycle for [Claude Code](https://claude.com/claude-code).**
 
-`ai-sdlc` is a Claude Code plugin that turns a rough idea into shipped, reviewed code through a small, opinionated pipeline. Each stage is a slash command; each command is backed by **23 expert builder agents**, **19 critic agents**, and deterministic shell scripts that enforce quality gates the model can't skip.
+`ai-sdlc` is a Claude Code plugin that turns a rough idea into shipped, reviewed code through a small, opinionated pipeline. Each stage is a slash command; each command is backed by **23 expert builder agents**, **20 critic agents**, and deterministic shell scripts that enforce quality gates the model can't skip.
 
 ```
 /discuss  →  /req2prd  →  /prd2plan  →  [ /plan2jira | /plan2linear ]  →  /execute-plan
@@ -12,7 +12,7 @@
   inputs   (validated)   (validated)                                       to 0 warnings
 ```
 
-Run it stage by stage, or hand the whole line to **`/devflow`** to orchestrate it end to end (with `/clear_and_go` checkpoints and `/trace-upstream` for root-cause analysis).
+Run it stage by stage, or hand the whole line to **`/devflow`** to orchestrate it end to end (with `/clear_and_go` checkpoints and `/trace-upstream` for root-cause analysis). **`/fullpipeline`** is the full-ceremony alternative — ten stages in fresh-context subagents with a human gate at each: the same line plus the tracker stage, the **`/test`** verification gate, a product review against the PRD, and a local-E2E → staging deploy → staging-verification tail.
 
 **Two pipelines, one plugin.** The line above is the **core pipeline** — stage-by-stage, *build-then-verify*, with a human gate between each artifact. For UI-bearing features there's a second, deeper track: the **TDD pipeline** — a 16-stage *test-driven factory* that authors the tests (against a real mock app or Figma design) **before** any code, then builds to green. Run it hands-on, or hand it to **`tdd-unattended.sh`** to run it **lights-out, end to end** — a genuine [dark factory](#the-tdd-pipeline-an-end-to-end-test-driven-factory).
 
@@ -52,9 +52,10 @@ And `/validate` runs the critic panel against any artifact (PRD, dev plan, or co
 Most "AI writes your app" tools are one giant prompt. This one is a **pipeline** with a deliberate split:
 
 - **Content vs. orchestration.** The LLM authors artifacts (PRDs, plans, code). Deterministic **shell scripts** own sequencing and gating — dependency graphs, quality thresholds, critic score parsing — so the important checks always run, in order, regardless of how the model feels that turn.
-- **Builders build, critics validate.** 23 **builder** agents are domain specialists that implement. 19 **critic** agents review from independent, adversarial angles. They are different roles in different phases — a builder never grades its own work.
-- **Domain-matched review.** A routing brain (`agent-config.json` + `critic-affinity-matrix.md`) picks the *right* critics for each change instead of running all 19 every time.
+- **Builders build, critics validate.** 23 **builder** agents are domain specialists that implement. 20 **critic** agents review from independent, adversarial angles. They are different roles in different phases — a builder never grades its own work.
+- **Domain-matched review.** A routing brain (`agent-config.json` + `critic-affinity-matrix.md`) picks the *right* critics for each change instead of running all 20 every time.
 - **Adversarial gate.** A mandatory **Devil's Advocate** pass hunts for what standard critics miss: routing errors, template gaps, cross-file inconsistencies, unwired integrations, and unverified config claims.
+- **An auditable quality layer.** `/test` closes execution with a **fact report** that separates *passed* (suites green) from *proven* (coverage matrix satisfied, no masking skips). `/ship` drives the release-gate sequence from a shell script, so no phase can be skipped. `/gatekeeper` audits the auditors — did critics, DA passes, and fix loops do real work, or rubber-stamp? And `/reflect` turns a window of run telemetry into the data your sprint retro starts from.
 
 The result is a repeatable path from idea → validated PRD → validated plan → implemented code that converges to zero warnings / zero criticals.
 
@@ -136,6 +137,8 @@ This detects your stack, writes a `pipeline.config.yaml`, scaffolds the `docs/` 
 
 Each artifact-producing stage (2, 3) runs a **critic panel** and won't pass until it clears the configured score thresholds. The optional tracker stage (3.5) runs a **mandatory Dev + Product critic gate** before creating any issues. Stage 4 runs, per story, a build→review loop plus a Devil's Advocate pass, then a final DA over all changes. (Stage numbering matches the canonical map in `docs/ai_definitions/PIPELINE.md` — four core stages plus optional 3.5; the checkpoint schema tracks `current_stage` 1–4.)
 
+Want more ceremony? **`/fullpipeline`** chains this same line with the tracker stage included, appends a Stage 5 — the **`/test`** verification gate, which audits and runs the whole test surface against the dev plan's coverage matrix — then continues through a product review against the PRD and a local-E2E → staging deploy → staging-verification tail (ten stages in all). `/test` also runs standalone on any feature branch.
+
 ---
 
 ## The TDD pipeline: an end-to-end test-driven factory
@@ -146,7 +149,7 @@ The core pipeline builds, then checks. The **TDD pipeline** inverts that: it tur
 
 | | Core pipeline | TDD pipeline |
 |---|---|---|
-| **Command** | `/devflow` (or stage by stage) | `/tdd-fullpipeline` · `/tdd-figma-fullpipeline` |
+| **Command** | `/devflow` (lean) · `/fullpipeline` (full ceremony) · or stage by stage | `/tdd-fullpipeline` · `/tdd-figma-fullpipeline` |
 | **Shape** | 4 linear stages | 16–17 stages; forks for design + tiered tests |
 | **Order** | build → then write tests | **write tests first → then build to green** |
 | **Who writes the tests** | the agent that also writes the code | a **blind agent** that never sees the code or the plan |
@@ -227,6 +230,7 @@ bash pipeline/scripts/tdd-unattended.sh \
 - **`/plan2jira @docs/dev_plans/<slug>.md`** *(optional)* — Create JIRA issues from a dev plan (Epic → Story → Sub-task), gated by a mandatory Dev + Product critic review, with dry-run preview and write-back of issue keys.
 - **`/plan2linear @docs/dev_plans/<slug>.md`** *(optional)* — Same, for **Linear**, using the Linear MCP directly (no API token file). Creates a project + issues + sub-issues and writes identifiers back into the plan.
 - **`/execute-plan docs/dev_plans/<slug>.md`** — Launch the shell orchestrator: parse the plan, build a dependency graph, execute stories sequentially within each group via a Ralph Loop, run a Devil's Advocate pass per story, triage findings into a remediation story, and finish with a final DA over all changes.
+- **`/test @docs/dev_plans/<slug>.md`** — The consolidated test verification gate (Stage 5 of `/fullpipeline`; runs standalone on any feature branch). Audits test existence against the coverage matrix, generates missing tests, runs every configured suite, enumerates **every skipped test by name**, audits CI config, re-runs smoke tests, and closes with a cumulative critic review. Emits a **FACT REPORT** that states two verdicts separately: *passed* (suites green) and *proven* (green + coverage matrix satisfied + no masking skips).
 
 ### Cross-cutting commands
 
@@ -238,10 +242,17 @@ bash pipeline/scripts/tdd-unattended.sh \
 ### Orchestration & workflow commands
 
 - **`/devflow <requirement>`** — Run the whole pipeline as one orchestrated line: `/discuss → /req2prd → /prd2plan → /execute-plan`, fresh-context, with a human gate and a context-clear between stages, plus resume detection. The hands-off way to run ai-sdlc end to end. (Reads `docs/ai_definitions/PIPELINE.md` as its stage map.)
+- **`/fullpipeline <requirement>`** — The full-ceremony counterpart to `/devflow`: chains PRD → dev plan → tracker → execution → `/test` verification → product review vs the PRD → local E2E → staging deploy → tests + E2E against staging (10 stages), each in a fresh-context subagent, every artifact committed to git as it lands, and a human gate at every stage. Choose it when the feature warrants full traceability (a tracker issue and reviewed PR per task) or staging verification is part of the definition of done.
 - **`/clear_and_go`** — Save a pipeline checkpoint to `docs/pipeline-state/<slug>.json` and hand back the exact command to resume with after `/clear`. Lets you run the pipeline manually stage-by-stage across context clears without losing your place.
 - **`/trace-upstream`** — Read-only upstream root-cause analysis: given a defect in a pipeline result, trace back through the deliverable chain (code → dev plan → PRD → requirement) to the **birthplace** stage, classify it, and route a two-altitude fix. Distinct from `/validate` (forward review) — this works backward from a symptom.
 
 > **`docs/ai_definitions/PIPELINE.md`** is the canonical stage map that `/devflow`, `/clear_and_go`, and `/trace-upstream` all read. `/pipeline-init` scaffolds it from `pipeline/templates/pipeline-definition-template.md`.
+
+### Quality-layer commands
+
+- **`/ship <task>`** — The mechanical release gate. A shell script (`pipeline/scripts/ship.sh`) drives the full quality sequence — Ralph Loop → independent DA + fix convergence → `/validate` with fresh eyes (plus a fix loop if it finds issues) → a second DA round → final DA verification → commit — as separate `claude -p` phases, so no phase can be skipped. The release is blocked until the *script* reads 0 warnings / 0 criticals from the gate outputs, not until a model claims the work is done. `/ship --gate` runs the same sequence minus the build phase over an existing feature branch's `main..HEAD` diff — the check-only terminal release gate `/fullpipeline` runs before declaring a pipeline complete.
+- **`/gatekeeper [--slug <slug>]`** — The meta-quality audit: trusts none of the gates and audits the auditors. Reads run telemetry (`docs/pipeline-state/`) and git history to validate that critics, DA passes, tests, and fix loops did real work on recent runs — not rubber-stamping — and flags threshold-gaming and unauditable (telemetry-free) runs. Persists a PASS/FAIL report to `docs/gatekeeper/`.
+- **`/reflect [Nd | --since <date> | --all]`** — The sprint retro feeder. Once per sprint, aggregates every run in the window — gate outcomes, critic score distributions, DA yield, decision-log assumptions — into `docs/retro/YYYY-MM-DD-retro.md`: recurring patterns with counts and citations, an assumption ledger, calibration trends, and 3–5 discussion prompts. Every conclusion routes to a structural change (template / skill / config / calibration) — never "try harder".
 
 ### TDD pipeline commands
 
@@ -272,9 +283,11 @@ Personas live in `pipeline/agents/`. Commands read the relevant persona file and
 
 Each builder file follows a standard shape (Role · When Activated · Domain Knowledge · Anti-Patterns to Avoid · Definition of Done · Foundation Mode) — enforced by `test/builder-agents-structure.test.js`.
 
-### 19 critic agents (`pipeline/agents/`)
+### 20 critic agents (`pipeline/agents/`)
 
-`dev` · `security` · `qa` · `product` · `frontend` · `designer` · `data` · `data-integrity` · `data-analytics` · `ai-data-analytics` · `api-contract` · `ml` · `infra` · `devops` · `performance` · `observability` · `integration` · `supabase` · `prompt-engineering`
+`dev` · `security` · `qa` · `product` · `frontend` · `designer` · `data` · `data-integrity` · `data-analytics` · `ai-data-analytics` · `api-contract` · `ml` · `infra` · `devops` · `performance` · `observability` · `integration` · `supabase` · `prompt-engineering` · `dependency`
+
+The **dependency critic** guards the supply chain: it requires registry verification (not name recognition) before any new package is accepted — catching hallucinated/slopsquatted packages, typosquats, unpinned versions, and lockfile drift. It joins code review automatically whenever a diff touches dependency manifests or lockfiles.
 
 Each critic file follows a standard shape (Role · When Used · Inputs · Review Checklist · Output Format · Pass/Fail Rule · Guidelines) — enforced by `test/critic-agents-structure.test.js`.
 
@@ -282,7 +295,7 @@ Each critic file follows a standard shape (Role · When Used · Inputs · Review
 
 `pipeline/agents/critic-affinity-matrix.md` is the single source of truth for which critics run when:
 
-- **Code review:** 3–8 domain-matched critics (not all 19).
+- **Code review:** 3–8 domain-matched critics (not all 20).
 - **Artifact review (PRD / plan):** 7–12 comprehensive, cross-domain critics.
 - **Core critics:** Dev, Security, QA, Product (Product dropped for infra-only work).
 
@@ -318,7 +331,7 @@ Tune which critics run per stage, the pass thresholds, Ralph Loop iterations, an
 
 ## Integrations: JIRA & Linear
 
-Stage 4 is optional and pluggable — pick the tracker you use (or neither).
+The tracker stage (3.5) is optional and pluggable — pick the tracker you use (or neither).
 
 ### JIRA — `/plan2jira`
 
@@ -335,17 +348,18 @@ cp scripts/jira/.env.example .env.jira    # then fill in your credentials
 
 Uses the **Linear MCP** already connected to your Claude session — no API token file. It resolves your team, creates a project (the epic) + one issue per story + sub-issues per task, and writes the Linear identifiers back into the dev plan. Connect the Linear integration in Claude Code before running it.
 
-Both stage-4 commands run the same mandatory Dev + Product critic gate on the plan before touching your tracker.
+Both tracker commands run the same mandatory Dev + Product critic gate on the plan before touching your tracker.
 
 ---
 
 ## How it works under the hood
 
-**Locating bundled files.** Claude Code does *not* expand `${CLAUDE_PLUGIN_ROOT}` inside slash-command markdown — only in hook/MCP configs. So `ai-sdlc` ships a `SessionStart` hook (`hooks/hooks.json`) that runs `pipeline/scripts/write-root.sh` and records the installed plugin path in `~/.ai-sdlc/root`. Every command that references bundled files (all except `/ask` and `/discuss`, which don't) begins by reading that file and substituting it for the `{{AISDLC_ROOT}}` placeholder in its bundled paths. This is what makes the plugin portable across machines with no per-install path rewriting.
+**Locating bundled files.** Claude Code does *not* expand `${CLAUDE_PLUGIN_ROOT}` inside slash-command markdown — only in hook/MCP configs. So `ai-sdlc` ships a `SessionStart` hook (`hooks/hooks.json`) that runs `pipeline/scripts/write-root.sh` and records the installed plugin path in `~/.ai-sdlc/root`. Every command that references bundled files begins by reading that file and substituting it for the `{{AISDLC_ROOT}}` placeholder in its bundled paths; the handful that read only project files (`/ask`, `/discuss`, `/reflect`, and a few TDD-track stage commands) skip it. This is what makes the plugin portable across machines with no per-install path rewriting.
 
 **Deterministic orchestration.** The shell scripts in `pipeline/scripts/` own the parts that must be reliable:
 
 - `execute-plan.sh` — parses the plan, builds the dependency graph, runs each story through the `/ralph-loop-to-0w0c-score-gt-9` command + a `/devils-advocate` gate, triages findings, and does a final DA. Self-resolves its own root from its location.
+- `ship.sh` — the mechanical release gate behind `/ship`: runs each quality phase (ralph loop, DA/fix convergence, validate, final DA, commit) as a separate `claude -p` subprocess and blocks the release until the script itself reads clean gate outputs.
 - `execute-plan-unattended.sh` — a heartbeat/auto-resume wrapper that rides out stalls, hangs, and API-outage bursts and resumes from the last committed task.
 - `execute-plan-monitor.sh` — a read-only progress dashboard for a running execution.
 - `select-agents.sh` + `glob-match.sh` + `agent-config.json` — deterministic domain inference and builder/critic selection.
@@ -364,17 +378,18 @@ ai-sdlc/
 ├── .claude-plugin/
 │   ├── plugin.json              # plugin manifest
 │   └── marketplace.json         # marketplace index
-├── commands/                    # 28 commands: 14 core pipeline/workflow + 11 tdd-* + execute/scaffold + ralph-loop (supporting)
+├── commands/                    # 33 commands: 19 core pipeline/workflow/quality + 11 tdd-* + execute/scaffold + ralph-loop (supporting)
 ├── hooks/
 │   └── hooks.json               # SessionStart → write-root.sh
 ├── pipeline/
 │   ├── agents/
 │   │   ├── builders/            # 23 builder personas
-│   │   ├── *-critic.md          # 19 critic personas
+│   │   ├── *-critic.md          # 20 critic personas
 │   │   └── critic-affinity-matrix.md
 │   ├── scripts/                 # orchestration + selection + parsing
 │   │   ├── write-root.sh        # publishes plugin root for commands
 │   │   ├── execute-plan*.sh · select-agents.sh · glob-match.sh
+│   │   ├── ship.sh              # mechanical release gate (for /ship)
 │   │   ├── tdd-unattended.sh    # lights-out driver for the TDD pipeline
 │   │   ├── preflight-e2e.sh · check-ownership.sh · check-migrations.sh   # TDD/execute checks
 │   │   ├── parse-scores.sh · parse-plan.py · agent-config.json
@@ -399,7 +414,7 @@ npm run test:scripts     # bats — shell script behavior
 npm run test:jira        # node --test — JIRA package
 ```
 
-The shipped suite covers the pipeline scripts (`glob-match`, `parse-scores`, `select-agents`, `helpers` incl. the `da_passed`/`count_cw` quality-gate parsers, `write-root`, `check-output`, `check-uncalled`, `post-build`, `execute-plan-unattended`, `execute-plan-monitor`), the agent-file structure for all 23 builders and 19 critics, and the JIRA import/parse/ADF logic — all green.
+The shipped suite covers the pipeline scripts (`glob-match`, `parse-scores`, `select-agents`, `helpers` incl. the `da_passed`/`count_cw` quality-gate parsers, `write-root`, `check-output`, `check-uncalled`, `post-build`, `execute-plan-unattended`, `execute-plan-monitor`, `ship`, `tdd-unattended`), the agent-file structure for all 23 builders and 20 critics, and the JIRA import/parse/ADF logic — all green.
 
 Requires [`bats`](https://github.com/bats-core/bats-core) for the shell suite (`brew install bats-core`).
 
